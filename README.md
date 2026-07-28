@@ -27,7 +27,7 @@ Both are tedious and error-prone to maintain by hand as the C# API evolves. Wasm
 ### 1. Reference the attributes from your class library
 
 ```xml
-<!-- YourGameLib.csproj -->
+<!-- YourLib.csproj -->
 <ItemGroup>
   <PackageReference Include="WasmBridge.Net.Attributes" Version="x.y.z" />
 </ItemGroup>
@@ -38,7 +38,7 @@ Both are tedious and error-prone to maintain by hand as the C# API evolves. Wasm
 ```xml
 <!-- YourApp.Wasm.csproj (Sdk="Microsoft.NET.Sdk.WebAssembly") -->
 <ItemGroup>
-  <ProjectReference Include="..\YourGameLib\YourGameLib.csproj" />
+  <ProjectReference Include="..\YourLib\YourLib.csproj" />
   <PackageReference Include="WasmBridge.Net.Sdk" Version="x.y.z" />
 </ItemGroup>
 ```
@@ -53,17 +53,17 @@ That's it - no manual `<Import>`, no extra `<Target>` wiring. Restoring the WASM
 ```csharp
 using WasmBridge.Attributes;
 
-[WasmBridge] // generates a "GameEngineBridge" static class with [JSExport] methods
-public class GameEngine
+[WasmBridge] // generates a "CalculatorBridge" static class with [JSExport] methods
+public class Calculator
 {
-    [WasmBridgeExport] // exposed on the bridge as "Advance"
-    public void Advance(double deltaTime) { /* ... */ }
+    [WasmBridgeExport] // exposed on the bridge as "Add"
+    public double Add(double a, double b) => a + b;
 }
 
-[WasmBridgeTsInterface] // generates gameView.ts: interface GameView + parseGameView()
-public sealed class GameView
+[WasmBridgeTsInterface] // generates result.ts: interface Result + parseResult()
+public sealed class Result
 {
-    public PortalView Portal { get; init; } = new();
+    public double Value { get; init; }
     // ...
 }
 ```
