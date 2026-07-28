@@ -1,0 +1,46 @@
+{
+  "name": "wasmbridge-net",
+  "version": "0.1.0",
+  "description": "CLI that builds/publishes a WasmBridge.Net-enabled .NET WebAssembly project and syncs its output (compiled app + generated TypeScript types) into a front-end project.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Neph",
+  "homepage": "https://github.com/NephChevsky/WasmBridge.Net/tree/master/wasmbridge-net#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NephChevsky/WasmBridge.Net.git",
+    "directory": "wasmbridge-net"
+  },
+  "bugs": {
+    "url": "https://github.com/NephChevsky/WasmBridge.Net/issues"
+  },
+  "bin": {
+    "wasmbridge-net": "./bin/cli.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "wasm",
+    "webassembly",
+    "dotnet",
+    "blazor",
+    "wasmbridge"
+  ]
+}

@@ -21,6 +21,7 @@ Both are tedious and error-prone to maintain by hand as the C# API evolves. Wasm
 |---|---|---|
 | **WasmBridge.Net.Attributes** | Tiny, dependency-free marker-attribute library (`[WasmBridge]`, `[WasmBridgeExport]`, `[WasmBridgeTsInterface]`). | The class library containing your logic, and anywhere else that needs to declare bridge/TS-root types. |
 | **WasmBridge.Net.Sdk** | MSBuild `Task`s that scan already-built reference assemblies for those attributes and generate the bridge `.cs` file(s) and TypeScript `.ts` file(s), plus a `.props` file with common WASM project settings (see below). Auto-imports itself via NuGet - no manual `<Import>` needed. | The `Microsoft.NET.Sdk.WebAssembly` project that actually gets published as WASM. |
+| **[wasmbridge-net](wasmbridge-net)** (npm) | CLI that builds/publishes the WASM project and syncs its output (compiled app + generated TypeScript types) into a front-end project. | Your front-end project (e.g. a Vite/React app). |
 
 ## Setup
 
@@ -80,8 +81,9 @@ Both paths are configurable via `$(WasmBridgeGeneratedOutputPath)` / `$(WasmBrid
 ```
 WasmBridge.Attributes/   # WasmBridge.Net.Attributes package source
 WasmBridge.Sdk/          # WasmBridge.Net.Sdk package source (tasks + build\*.props/*.targets)
+wasmbridge-net/          # wasmbridge-net npm package source (see its own README)
 WasmBridge.Net.slnx
-pack.ps1                 # packs both projects into ./artifacts (a local NuGet feed)
+pack.ps1                 # packs both .NET projects into ./artifacts (a local NuGet feed)
 ```
 
 ## Local development / testing
@@ -91,3 +93,5 @@ NuGet package versions are immutable once pushed to nuget.org, so test changes l
 1. Bump `<Version>` in the relevant `.csproj` (`WasmBridge.Attributes/WasmBridge.Attributes.csproj` or `WasmBridge.Sdk/WasmBridge.Sdk.csproj`).
 2. Run `.\pack.ps1` (or `dotnet pack <project> -c Release -o artifacts` directly) to produce a `.nupkg` in `./artifacts`.
 3. In the consuming repo, add a `NuGet.Config` with a package source pointing at this repo's `artifacts` folder (alongside `nuget.org`), and bump the consumer's `PackageReference` version to match. Run `dotnet restore --force`.
+
+`wasmbridge-net` (npm) has its own local-testing/publishing instructions in [wasmbridge-net/README.md](wasmbridge-net/README.md).
