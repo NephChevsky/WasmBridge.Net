@@ -90,15 +90,3 @@ plugin, etc.) can reuse it without shelling back out to the CLI.
 npm ci
 npm test      # node:test - config loading + input validation
 ```
-
-## Publishing
-
-Handled by the `publish-npm.yml` GitHub Actions workflow (manual `workflow_dispatch` trigger) in
-the parent repo, using npm's [trusted publishing](https://docs.npmjs.com/trusted-publishers)
-(OIDC) - no `NPM_TOKEN` secret required. One-time setup on npmjs.com: configure this package with
-a trusted publisher pointing at this GitHub repo, workflow file (`publish-npm.yml`), and the
-`production` environment. To release:
-
-1. Bump `version` in `package.json` (npm versions are immutable once published).
-2. Run the `Publish wasmbridge-net to npm` workflow from the Actions tab.
-

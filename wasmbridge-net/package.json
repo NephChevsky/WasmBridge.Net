@@ -1,6 +1,6 @@
 {
   "name": "wasmbridge-net",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI that builds/publishes a WasmBridge.Net-enabled .NET WebAssembly project and syncs its output (compiled app + generated TypeScript types) into a front-end project.",
   "type": "module",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "url": "https://github.com/NephChevsky/WasmBridge.Net/issues"
   },
   "bin": {
-    "wasmbridge-net": "./bin/cli.js"
+    "wasmbridge-net": "bin/cli.js"
   },
   "main": "./src/index.js",
   "exports": {
