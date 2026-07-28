@@ -1,21 +1,20 @@
-# Packs WasmBridge.Attributes and WasmBridge.Tasks into the local feed (./artifacts).
+# Packs WasmBridge.Attributes and WasmBridge.Net.Sdk into the local feed (./artifacts).
 #
-# Each run uses a unique timestamp-based prerelease version, so consumers referencing
-# Version="1.0.0-*" always float to the newest local build on their next restore, without
-# having to bump a version number by hand or clear the NuGet global-packages cache.
+# Bump the <Version> in each project's .csproj before running this to publish a new version;
+# consumers pin an exact Version in their PackageReference (NuGet versions are immutable once
+# pushed to nuget.org), so there's no floating version to rely on here.
 $ErrorActionPreference = 'Stop'
 
-$version = "1.0.0-dev.$(Get-Date -Format 'yyyyMMddHHmmss')"
 $repoRoot = $PSScriptRoot
 $feed = Join-Path $repoRoot 'artifacts'
 
 New-Item -ItemType Directory -Force -Path $feed | Out-Null
 
-Write-Host "Packing version $version into $feed"
-dotnet pack (Join-Path $repoRoot 'WasmBridge.Attributes\WasmBridge.Attributes.csproj') -c Release -o $feed -p:PackageVersion=$version
+Write-Host "Packing into $feed"
+dotnet pack (Join-Path $repoRoot 'WasmBridge.Attributes\WasmBridge.Attributes.csproj') -c Release -o $feed
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-dotnet pack (Join-Path $repoRoot 'WasmBridge.Tasks\WasmBridge.Tasks.csproj') -c Release -o $feed -p:PackageVersion=$version
+dotnet pack (Join-Path $repoRoot 'WasmBridge.Sdk\WasmBridge.Sdk.csproj') -c Release -o $feed
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-Write-Host "Done. Consumers using Version=`"1.0.0-*`" will pick this up on their next restore."
+Write-Host "Done."

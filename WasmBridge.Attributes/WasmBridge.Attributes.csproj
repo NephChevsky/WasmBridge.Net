@@ -10,7 +10,7 @@
   <PropertyGroup>
     <PackageId>WasmBridge.Net.Attributes</PackageId>
     <Version>0.1.0</Version>
-    <Description>Marker attributes consumed by WasmBridge.Tasks to generate WebAssembly JSExport bridges and TypeScript interop types.</Description>
+    <Description>Marker attributes consumed by WasmBridge.Net.Sdk to generate WebAssembly JSExport bridges and TypeScript interop types.</Description>
   </PropertyGroup>
 
 </Project>

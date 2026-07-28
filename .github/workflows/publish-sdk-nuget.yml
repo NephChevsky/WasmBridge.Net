@@ -1,4 +1,4 @@
-name: Publish WasmBridge.Net.Tasks to NuGet
+name: Publish WasmBridge.Net.Sdk to NuGet
 
 on:
   workflow_dispatch:
@@ -19,10 +19,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore
-        run: dotnet restore WasmBridge.Tasks/WasmBridge.Tasks.csproj
+        run: dotnet restore WasmBridge.Sdk/WasmBridge.Sdk.csproj
 
       - name: Pack
-        run: dotnet pack WasmBridge.Tasks/WasmBridge.Tasks.csproj -c Release -o ./nupkg
+        run: dotnet pack WasmBridge.Sdk/WasmBridge.Sdk.csproj -c Release -o ./nupkg
 
       # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)

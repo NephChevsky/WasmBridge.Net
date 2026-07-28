@@ -3,7 +3,7 @@
   <!--
     Common properties for WASM projects consuming this package.
     Auto-imported by NuGet when the consuming project adds
-    <PackageReference Include="WasmBridge.Net.Tasks" ... /> - no manual <Import> needed.
+    <PackageReference Include="WasmBridge.Net.Sdk" ... /> - no manual <Import> needed.
     (.props files are imported at the top of the consuming project, so it can still
     override any of these in its own PropertyGroups if needed.)
   -->

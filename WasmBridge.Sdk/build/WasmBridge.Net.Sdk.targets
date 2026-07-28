@@ -8,17 +8,17 @@
     compilation - it cannot see source added by another generator.
 
     Auto-imported by NuGet when the consuming project adds
-    <PackageReference Include="WasmBridge.Tasks" ... /> - no manual <Import> needed.
+    <PackageReference Include="WasmBridge.Net.Sdk" ... /> - no manual <Import> needed.
   -->
 
   <!--
     TaskHostFactory runs the task in a separate, short-lived process instead of loading the
     assembly into the main MSBuild/VBCSCompiler process. Without it, the build server's node
-    reuse keeps WasmBridge.Tasks.dll loaded (and locked) after the build finishes.
+    reuse keeps WasmBridge.Sdk.dll loaded (and locked) after the build finishes.
   -->
   <UsingTask
-      TaskName="WasmBridge.Tasks.GenerateWasmBridgesTask"
-      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Tasks.dll"
+      TaskName="WasmBridge.Sdk.GenerateWasmBridgesTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Sdk.dll"
       TaskFactory="TaskHostFactory" />
 
   <Target Name="GenerateWasmBridges" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">
@@ -46,8 +46,8 @@
     for the same DLL-lock reason as GenerateWasmBridgesTask above.
   -->
   <UsingTask
-      TaskName="WasmBridge.Tasks.GenerateTypeScriptTypesTask"
-      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Tasks.dll"
+      TaskName="WasmBridge.Sdk.GenerateTypeScriptTypesTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Sdk.dll"
       TaskFactory="TaskHostFactory" />
 
   <Target Name="GenerateTypeScriptTypes" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">

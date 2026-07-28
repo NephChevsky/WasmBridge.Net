@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace WasmBridge.Tasks;
+namespace WasmBridge.Sdk;
 
 /// <summary>
 /// Scans a set of already-built assemblies for types annotated with

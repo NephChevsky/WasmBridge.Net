@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="WasmBridge.Attributes/WasmBridge.Attributes.csproj" />
-  <Project Path="WasmBridge.Tasks/WasmBridge.Tasks.csproj" />
+  <Project Path="WasmBridge.Sdk/WasmBridge.Sdk.csproj" />
 </Solution>
