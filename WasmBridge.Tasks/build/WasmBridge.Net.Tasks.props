@@ -1,0 +1,33 @@
+<Project>
+
+  <!--
+    Common properties for WASM projects consuming this package.
+    Auto-imported by NuGet when the consuming project adds
+    <PackageReference Include="WasmBridge.Net.Tasks" ... /> - no manual <Import> needed.
+    (.props files are imported at the top of the consuming project, so it can still
+    override any of these in its own PropertyGroups if needed.)
+  -->
+
+  <PropertyGroup>
+    <!-- [JSExport] requires unsafe blocks to be allowed. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Consumers typically reference framework assets (e.g. dotnet.js) by a fixed path,
+         so fingerprinting (content-hash-based renaming) must stay disabled. -->
+    <StaticWebAssetFingerprintingEnabled>false</StaticWebAssetFingerprintingEnabled>
+    <WasmFingerprintAssets>false</WasmFingerprintAssets>
+  </PropertyGroup>
+
+  <!-- Enable debugging support in Debug builds -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+    <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
+    <WasmEnableDebugging>true</WasmEnableDebugging>
+    <!-- Trimming regenerates PDBs late in the pipeline in a way the static web asset
+         pipeline doesn't pick up correctly, breaking browser debugging symbols.
+         Disable trimming in Debug so the default (correct) PDB copy behavior applies. -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+</Project>

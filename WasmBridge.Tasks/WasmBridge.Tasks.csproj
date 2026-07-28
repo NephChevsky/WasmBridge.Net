@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>WasmBridge.Net.Tasks</PackageId>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Description>MSBuild tasks that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types.</Description>
 
     <!-- This package only carries MSBuild build-time logic, not a library consumers compile against. -->
@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <None Include="build\WasmBridge.Net.Tasks.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\WasmBridge.Net.Tasks.props" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
   <!--
