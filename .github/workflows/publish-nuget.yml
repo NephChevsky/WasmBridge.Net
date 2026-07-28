@@ -1,0 +1,29 @@
+name: Publish WasmBridge.Attributes to NuGet
+
+on:
+  workflow_dispatch:
+
+env:
+  PACKAGE_VERSION: 0.1.0
+  PROJECT_PATH: WasmBridge.Attributes/WasmBridge.Attributes.csproj
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Pack
+        run: dotnet pack ${{ env.PROJECT_PATH }} -c Release -o ./nupkg -p:PackageVersion=${{ env.PACKAGE_VERSION }}
+
+      - name: Push to NuGet
+        run: dotnet nuget push "./nupkg/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
