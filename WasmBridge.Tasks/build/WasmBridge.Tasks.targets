@@ -1,0 +1,68 @@
+<Project>
+
+  <!--
+    Imports the WasmBridge code generation task and wires it up to run before the C#
+    compiler so generated bridge classes are compiled as ordinary source files.
+    This is required (rather than a Roslyn source generator) because the [JSExport]
+    interop generator only recognizes methods that exist in the original source of a
+    compilation - it cannot see source added by another generator.
+
+    Auto-imported by NuGet when the consuming project adds
+    <PackageReference Include="WasmBridge.Tasks" ... /> - no manual <Import> needed.
+  -->
+
+  <!--
+    TaskHostFactory runs the task in a separate, short-lived process instead of loading the
+    assembly into the main MSBuild/VBCSCompiler process. Without it, the build server's node
+    reuse keeps WasmBridge.Tasks.dll loaded (and locked) after the build finishes.
+  -->
+  <UsingTask
+      TaskName="WasmBridge.Tasks.GenerateWasmBridgesTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Tasks.dll"
+      TaskFactory="TaskHostFactory" />
+
+  <Target Name="GenerateWasmBridges" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">
+    <!--
+      IntermediateOutputPath is only finalized by SDK targets that run before CoreCompile
+      (e.g. runtime identifier inference), so it must be read here rather than in a
+      top-level PropertyGroup, which would observe its pre-finalized (empty) value.
+    -->
+    <PropertyGroup>
+      <_WasmBridgeGeneratedOutputPath Condition="'$(WasmBridgeGeneratedOutputPath)' == ''">$(IntermediateOutputPath)WasmBridge\</_WasmBridgeGeneratedOutputPath>
+      <_WasmBridgeGeneratedOutputPath Condition="'$(WasmBridgeGeneratedOutputPath)' != ''">$(WasmBridgeGeneratedOutputPath)</_WasmBridgeGeneratedOutputPath>
+    </PropertyGroup>
+    <GenerateWasmBridgesTask Assemblies="@(ReferencePath)" OutputPath="$(_WasmBridgeGeneratedOutputPath)">
+      <Output TaskParameter="GeneratedFiles" ItemName="Compile" />
+      <Output TaskParameter="GeneratedFiles" ItemName="FileWrites" />
+    </GenerateWasmBridgesTask>
+  </Target>
+
+  <!--
+    Generates TypeScript interfaces (and parseX helpers) for the front-end from the C# types
+    annotated with [WasmBridgeTsInterface]. Always writes into the consuming project's own
+    build output ($(IntermediateOutputPath)wasm-interfaces\ by default, overridable via
+    $(WasmBridgeTypeScriptOutputPath)) rather than directly into the front-end - a separate
+    sync step is responsible for copying these files where they're needed. Uses TaskHostFactory
+    for the same DLL-lock reason as GenerateWasmBridgesTask above.
+  -->
+  <UsingTask
+      TaskName="WasmBridge.Tasks.GenerateTypeScriptTypesTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Tasks.dll"
+      TaskFactory="TaskHostFactory" />
+
+  <Target Name="GenerateTypeScriptTypes" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">
+    <!--
+      IntermediateOutputPath is only finalized by SDK targets that run before CoreCompile
+      (e.g. runtime identifier inference), so it must be read here rather than in a
+      top-level PropertyGroup, which would observe its pre-finalized (empty) value.
+    -->
+    <PropertyGroup>
+      <_WasmBridgeTypeScriptOutputPath Condition="'$(WasmBridgeTypeScriptOutputPath)' == ''">$(IntermediateOutputPath)wasm-interfaces\</_WasmBridgeTypeScriptOutputPath>
+      <_WasmBridgeTypeScriptOutputPath Condition="'$(WasmBridgeTypeScriptOutputPath)' != ''">$(WasmBridgeTypeScriptOutputPath)</_WasmBridgeTypeScriptOutputPath>
+    </PropertyGroup>
+    <GenerateTypeScriptTypesTask Assemblies="@(ReferencePath)" OutputPath="$(_WasmBridgeTypeScriptOutputPath)">
+      <Output TaskParameter="GeneratedFiles" ItemName="FileWrites" />
+    </GenerateTypeScriptTypesTask>
+  </Target>
+
+</Project>

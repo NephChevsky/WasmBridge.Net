@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>WasmBridge.Tasks</PackageId>
+    <Version>1.0.0</Version>
+    <Description>MSBuild tasks that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types.</Description>
+
+    <!-- This package only carries MSBuild build-time logic, not a library consumers compile against. -->
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <!-- Don't put the task assembly under lib\ - it's not meant to be referenced from C# code. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- Don't flow our own build-only PackageReferences as dependencies of this package. -->
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <!-- Copy this project's dependencies (e.g. System.Reflection.MetadataLoadContext) next to
+         the task DLL so IncludeTaskAssembliesInPackage below can pack them all together. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- NU5100: assembly outside lib/ or ref/ (expected, see IncludeBuildOutput above).
+         NU5128: no lib/ref assemblies (expected, this package has no compile-time surface). -->
+    <NoWarn>$(NoWarn);NU5100;NU5128</NoWarn>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddTaskAssembliesToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.28" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\WasmBridge.Tasks.targets" Pack="true" PackagePath="build\" />
+  </ItemGroup>
+
+  <!--
+    NuGet's default packing only copies the project's own compiled assembly (which we disabled
+    via IncludeBuildOutput, since this is a build-time-only task, not a reference assembly).
+    This target instead copies the task DLL plus its resolved runtime dependencies (e.g.
+    System.Reflection.MetadataLoadContext and its own transitive deps, thanks to
+    CopyLocalLockFileAssemblies above) into tasks\<TargetFramework>\, matching the path that
+    build\WasmBridge.Tasks.targets loads the task assembly from.
+  -->
+  <Target Name="_AddTaskAssembliesToPackage">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)*.dll">
+        <PackagePath>tasks\$(TargetFramework)\</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+</Project>
