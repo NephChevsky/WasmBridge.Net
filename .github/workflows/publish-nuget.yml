@@ -21,7 +21,7 @@ jobs:
         run: dotnet restore WasmBridge.Attributes/WasmBridge.Attributes.csproj
 
       - name: Pack
-        run: dotnet pack WasmBridge.Attributes/WasmBridge.Attributes.csproj -c Release -o ./nupkg -p:PackageVersion=0.1.0
+        run: dotnet pack WasmBridge.Attributes/WasmBridge.Attributes.csproj -c Release -o ./nupkg
 
       # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
