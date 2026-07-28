@@ -11,6 +11,7 @@
     <PackageId>WasmBridge.Net.Sdk</PackageId>
     <Version>0.1.0</Version>
     <Description>MSBuild SDK tasks and props/targets that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types, plus common WASM debug/publish settings.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <!-- This package only carries MSBuild build-time logic, not a library consumers compile against. -->
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -36,6 +37,7 @@
   <ItemGroup>
     <None Include="build\WasmBridge.Net.Sdk.targets" Pack="true" PackagePath="build\" />
     <None Include="build\WasmBridge.Net.Sdk.props" Pack="true" PackagePath="build\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!--
