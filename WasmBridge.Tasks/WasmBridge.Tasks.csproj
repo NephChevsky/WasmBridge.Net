@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>WasmBridge.Net.Tasks</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>MSBuild tasks that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types.</Description>
 
     <!-- This package only carries MSBuild build-time logic, not a library consumers compile against. -->
@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="build\WasmBridge.Tasks.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\WasmBridge.Net.Tasks.targets" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
   <!--
@@ -43,7 +43,7 @@
     This target instead copies the task DLL plus its resolved runtime dependencies (e.g.
     System.Reflection.MetadataLoadContext and its own transitive deps, thanks to
     CopyLocalLockFileAssemblies above) into tasks\<TargetFramework>\, matching the path that
-    build\WasmBridge.Tasks.targets loads the task assembly from.
+    build\WasmBridge.Net.Tasks.targets loads the task assembly from.
   -->
   <Target Name="_AddTaskAssembliesToPackage">
     <ItemGroup>
