@@ -1,0 +1,5 @@
+{
+  "wasmProject": "../TodoLib.Wasm/TodoLib.Wasm.csproj",
+  "publicDir": "public/wasm-app",
+  "srcDir": "src/wasm-interfaces"
+}
