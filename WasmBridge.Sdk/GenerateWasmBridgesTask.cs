@@ -26,6 +26,7 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
     private const string BridgeAttributesAssemblyName = "WasmBridge.Attributes";
     private const string BridgeAttributeFullName = "WasmBridge.Attributes.WasmBridgeAttribute";
     private const string BridgeExportAttributeFullName = "WasmBridge.Attributes.WasmBridgeExportAttribute";
+    private const string TsInterfaceAttributeFullName = "WasmBridge.Attributes.WasmBridgeTsInterfaceAttribute";
 
     private static readonly Dictionary<string, string> PrimitiveAliases = new()
     {
@@ -192,13 +193,25 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
         foreach ((MethodInfo method, CustomAttributeData attribute) in methods)
         {
             string exportedName = GetNamedStringArgument(attribute, "Name") ?? method.Name;
-            string returnType = GetTypeName(method.ReturnType);
             string parameters = string.Join(", ", method.GetParameters().Select(p => $"{GetTypeName(p.ParameterType)} {p.Name}"));
             string arguments = string.Join(", ", method.GetParameters().Select(p => p.Name));
             string invocationTarget = method.IsStatic ? targetTypeName : "_target";
+            string call = $"{invocationTarget}.{method.Name}({arguments})";
 
             sb.AppendLine("    [JSExport]");
-            sb.AppendLine($"    internal static {returnType} {exportedName}({parameters}) => {invocationTarget}.{method.Name}({arguments});");
+            string? jsonPropertyName = GetJsonContextPropertyName(method.ReturnType);
+            if (jsonPropertyName is not null)
+            {
+                // The return type isn't JSExport-marshalable directly (it's a
+                // [WasmBridgeTsInterface]-rooted type or a List<T> of one), so serialize it
+                // to JSON using the SDK-generated WasmBridgeJsonContext instead.
+                sb.AppendLine($"    internal static string {exportedName}({parameters}) => global::System.Text.Json.JsonSerializer.Serialize({call}, WasmBridgeJsonContext.Default.{jsonPropertyName});");
+            }
+            else
+            {
+                string returnType = GetTypeName(method.ReturnType);
+                sb.AppendLine($"    internal static {returnType} {exportedName}({parameters}) => {call};");
+            }
             sb.AppendLine();
         }
 
@@ -218,6 +231,35 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
 
         return "global::" + type.FullName;
     }
+
+    /// <summary>
+    /// If <paramref name="type"/> is a <c>[WasmBridgeTsInterface]</c>-rooted type, or a closed
+    /// <c>List&lt;T&gt;</c> of one, returns the matching property name on the SDK-generated
+    /// <c>WasmBridgeJsonContext</c> (see <c>GenerateJsonSerializerContextTask</c>) to serialize
+    /// it with. Otherwise returns <see langword="null"/> and the return type is passed through
+    /// as-is (the existing primitive/verbatim behavior).
+    /// </summary>
+    private static string? GetJsonContextPropertyName(Type type)
+    {
+        if (IsTsInterfaceRoot(type))
+        {
+            return type.Name;
+        }
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition().FullName == "System.Collections.Generic.List`1")
+        {
+            Type elementType = type.GetGenericArguments()[0];
+            if (IsTsInterfaceRoot(elementType))
+            {
+                return "List" + elementType.Name;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsTsInterfaceRoot(Type type) =>
+        type.GetCustomAttributesData().Any(a => a.AttributeType.FullName == TsInterfaceAttributeFullName);
 
     private static string? GetNamedStringArgument(CustomAttributeData attribute, string name)
     {

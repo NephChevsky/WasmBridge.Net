@@ -1,4 +1,3 @@
-using System.Text.Json;
 using WasmBridge.Attributes;
 
 namespace TodoLib;
@@ -50,16 +49,19 @@ public class TodoService
 		return _items.RemoveAll(i => i.Id == id) > 0;
 	}
 
+	// The bridge generator sees TodoItem is [WasmBridgeTsInterface]-rooted and auto-wraps this
+	// in JsonSerializer.Serialize using the SDK-generated WasmBridgeJsonContext, exposing it
+	// as a JSON string on the JS side - no hand-written serialization needed here.
 	[WasmBridgeExport]
-	public string GetTodos()
+	public List<TodoItem> GetTodos()
 	{
-		return JsonSerializer.Serialize(_items, TodoJsonContext.Default.ListTodoItem);
+		return _items;
 	}
 
 	[WasmBridgeExport]
-	public string GetStats()
+	public TodoStats GetStats()
 	{
-		var stats = new TodoStats
+		return new TodoStats
 		{
 			Total = _items.Count,
 			Completed = _items.Count(i => i.Completed),
@@ -67,6 +69,5 @@ public class TodoService
 				.GroupBy(i => i.Priority.ToString())
 				.ToDictionary(g => g.Key, g => g.Count())
 		};
-		return JsonSerializer.Serialize(stats, TodoJsonContext.Default.TodoStats);
 	}
 }

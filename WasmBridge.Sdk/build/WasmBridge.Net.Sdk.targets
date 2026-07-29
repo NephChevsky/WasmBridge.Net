@@ -65,4 +65,33 @@
     </GenerateTypeScriptTypesTask>
   </Target>
 
+  <!--
+    Generates a partial JsonSerializerContext registering every [WasmBridgeTsInterface] root
+    type (plus a List<T> of it) for source-generated JSON serialization, so bridge methods
+    that hand-serialize these types don't need their own hand-written context. Written into
+    the consuming project's own build output alongside the generated bridge classes so it
+    participates in the same compilation. Uses TaskHostFactory for the same DLL-lock reason
+    as the tasks above.
+  -->
+  <UsingTask
+      TaskName="WasmBridge.Sdk.GenerateJsonSerializerContextTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Sdk.dll"
+      TaskFactory="TaskHostFactory" />
+
+  <Target Name="GenerateJsonSerializerContext" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">
+    <!--
+      IntermediateOutputPath is only finalized by SDK targets that run before CoreCompile
+      (e.g. runtime identifier inference), so it must be read here rather than in a
+      top-level PropertyGroup, which would observe its pre-finalized (empty) value.
+    -->
+    <PropertyGroup>
+      <_WasmBridgeGeneratedOutputPath Condition="'$(WasmBridgeGeneratedOutputPath)' == ''">$(IntermediateOutputPath)WasmBridge\</_WasmBridgeGeneratedOutputPath>
+      <_WasmBridgeGeneratedOutputPath Condition="'$(WasmBridgeGeneratedOutputPath)' != ''">$(WasmBridgeGeneratedOutputPath)</_WasmBridgeGeneratedOutputPath>
+    </PropertyGroup>
+    <GenerateJsonSerializerContextTask Assemblies="@(ReferencePath)" OutputPath="$(_WasmBridgeGeneratedOutputPath)">
+      <Output TaskParameter="GeneratedFiles" ItemName="Compile" />
+      <Output TaskParameter="GeneratedFiles" ItemName="FileWrites" />
+    </GenerateJsonSerializerContextTask>
+  </Target>
+
 </Project>

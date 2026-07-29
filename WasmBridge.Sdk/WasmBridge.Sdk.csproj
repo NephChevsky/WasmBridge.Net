@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageId>WasmBridge.Net.Sdk</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>MSBuild SDK tasks and props/targets that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types, plus common WASM debug/publish settings.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 

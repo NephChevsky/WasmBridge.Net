@@ -3,6 +3,7 @@ obj/
 artifacts/
 *.user
 .vs/
+Nuget.Config
 
 # wasmbridge-net's CLI entrypoint lives in a "bin/" folder too (npm convention), but the
 # blanket .NET "bin/" ignore above would otherwise also match and hide it from git/npm.
