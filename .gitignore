@@ -3,6 +3,7 @@ obj/
 artifacts/
 *.user
 .vs/
+.vscode/
 Nuget.Config
 
 # wasmbridge-net's CLI entrypoint lives in a "bin/" folder too (npm convention), but the

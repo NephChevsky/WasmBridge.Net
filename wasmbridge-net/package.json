@@ -1,6 +1,6 @@
 {
   "name": "wasmbridge-net",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "CLI that builds/publishes a WasmBridge.Net-enabled .NET WebAssembly project and syncs its output (compiled app + generated TypeScript types) into a front-end project.",
   "type": "module",
   "license": "MIT",
