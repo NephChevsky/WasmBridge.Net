@@ -37,7 +37,21 @@ npm install
 
 ## Configure
 
-Add `wasmbridge.config.json` next to your front-end's `package.json`:
+Run `init` from your front-end project (next to its `package.json`) to scaffold everything below
+in one go:
+
+```
+npx wasmbridge-net init
+```
+
+It auto-detects the WebAssembly project by looking for a single `*.csproj` with
+`Sdk="Microsoft.NET.Sdk.WebAssembly"` in sibling directories, writes `wasmbridge.config.json`, and
+adds the `sync:wasm*`/`predev`/`prebuild` scripts + the `wasmbridge-net` devDependency to
+`package.json` (existing scripts/dependency entries are left untouched). Pass `--project <path>` if
+auto-detection can't find (or picks the wrong) project, and `--force` to overwrite an existing
+config. Run `npm install` afterwards to pick up the new devDependency.
+
+Or add `wasmbridge.config.json` by hand next to your front-end's `package.json`:
 
 ```json
 {
