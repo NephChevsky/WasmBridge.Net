@@ -134,7 +134,11 @@ function findWasmProject(cwd) {
   return matches.length === 1 ? matches[0] : undefined;
 }
 
-function toPosixRelative(fromDir, toPath) {
+/**
+ * Formats `toPath` relative to `fromDir` as a POSIX-style relative path (always prefixed with
+ * `./` or `../`). Exported for reuse by the VS Code config generator.
+ */
+export function toPosixRelative(fromDir, toPath) {
   const relative = path.relative(fromDir, toPath).split(path.sep).join('/');
   return relative.startsWith('.') ? relative : `./${relative}`;
 }

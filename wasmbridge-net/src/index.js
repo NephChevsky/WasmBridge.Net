@@ -117,7 +117,13 @@ export function syncWasm(options) {
   console.log(`[wasmbridge-net] WASM assets synced (${configuration}).`);
 }
 
-function getTargetFramework(csprojPath) {
+/**
+ * Reads `<TargetFramework>` out of a `.csproj` (e.g. `"net9.0"`). Exported for reuse by other
+ * commands (e.g. the `debug`/`init --vscode` VS Code config generator) that need to compute a
+ * build output path (`bin/<Configuration>/<TargetFramework>`).
+ * @param {string} csprojPath
+ */
+export function getTargetFramework(csprojPath) {
   const content = readFileSync(csprojPath, 'utf8');
   const match = content.match(/<TargetFramework>\s*([^<\s]+)\s*<\/TargetFramework>/);
   if (!match) {
