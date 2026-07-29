@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/wasmbridge-net)](https://www.npmjs.com/package/wasmbridge-net)
 
-CLI companion to [WasmBridge.Net](../../README.md) that builds (Debug) or publishes (Release) a
+CLI companion to [WasmBridge.Net](../README.md) that builds (Debug) or publishes (Release) a
 `WasmBridge.Net`-enabled `Microsoft.NET.Sdk.WebAssembly` project and syncs its output into a
 front-end project:
 
