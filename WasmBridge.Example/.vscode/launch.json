@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug TodoLib.Wasm in Chrome (via web)",
+      "type": "blazorwasm",
+      "request": "launch",
+      "preLaunchTask": "sync-wasm-debug",
+      "cwd": "${workspaceFolder}/TodoLib.Wasm",
+      "url": "http://localhost:5173",
+      "browser": "chrome",
+      "webRoot": "${workspaceFolder}/TodoLib.Wasm/bin/Debug/net10.0/wwwroot",
+      "browserConfig": {
+        "runtimeArgs": [
+          "--remote-allow-origins=*"
+        ],
+        "server": {
+          "command": "npm run dev",
+          "cwd": "${workspaceFolder}/web",
+          "autoAttachChildProcesses": false
+        }
+      },
+      "trace": "verbose"
+    }
+  ]
+}
