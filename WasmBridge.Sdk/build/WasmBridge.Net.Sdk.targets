@@ -121,4 +121,19 @@
     </GenerateBridgeTypeScriptTask>
   </Target>
 
+  <!--
+    Adds the shipped `LocalStorageInterop` [JSImport] bindings (localStorage get/set/remove)
+    straight into the consuming project's own compilation, so it's available for free without
+    hand-writing JSImport boilerplate. Plain ItemGroup (not a Target/Task) since this is just a
+    static source file, not something that needs generating - normal MSBuild item evaluation
+    picks it up before CoreCompile like any other <Compile Include>.
+    Opt out with <WasmBridgeIncludeLocalStorageInterop>false</WasmBridgeIncludeLocalStorageInterop>.
+  -->
+  <PropertyGroup>
+    <WasmBridgeIncludeLocalStorageInterop Condition="'$(WasmBridgeIncludeLocalStorageInterop)' == ''">true</WasmBridgeIncludeLocalStorageInterop>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(WasmBridgeIncludeLocalStorageInterop)' == 'true'">
+    <Compile Include="$(MSBuildThisFileDirectory)..\src\LocalStorageInterop.cs" Link="WasmBridge\LocalStorageInterop.cs" />
+  </ItemGroup>
+
 </Project>
