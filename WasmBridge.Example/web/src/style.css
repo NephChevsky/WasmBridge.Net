@@ -1,0 +1,48 @@
+.app {
+  max-width: 32rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+}
+
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-form input[type='text'] {
+  flex: 1;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.todo-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.todo-list li.completed .todo-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.todo-text {
+  flex: 1;
+}
+
+.priority-Low { color: #4a4a4a; }
+.priority-Medium { color: #b8860b; }
+.priority-High { color: #c0392b; }
+
+.stats {
+  border-top: 1px solid #ccc;
+  padding-top: 0.75rem;
+  color: #444;
+}
