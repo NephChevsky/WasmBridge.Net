@@ -1,5 +1,9 @@
 # WasmBridge.Net
 
+[![NuGet WasmBridge.Net.Attributes](https://img.shields.io/nuget/v/WasmBridge.Net.Attributes?label=WasmBridge.Net.Attributes)](https://www.nuget.org/packages/WasmBridge.Net.Attributes)
+[![NuGet WasmBridge.Net.Sdk](https://img.shields.io/nuget/v/WasmBridge.Net.Sdk?label=WasmBridge.Net.Sdk)](https://www.nuget.org/packages/WasmBridge.Net.Sdk)
+[![npm wasmbridge-net](https://img.shields.io/npm/v/wasmbridge-net?label=wasmbridge-net)](https://www.npmjs.com/package/wasmbridge-net)
+
 MSBuild tooling that generates WebAssembly JS-interop code for .NET projects (`Microsoft.NET.Sdk.WebAssembly` / Blazor WASM) from plain attributes, so you don't hand-write `[JSExport]` bridge classes or keep a parallel set of TypeScript types in sync by hand.
 
 ## Objective
@@ -19,9 +23,9 @@ Both are tedious and error-prone to maintain by hand as the C# API evolves. Wasm
 
 | Package | What it is | Referenced from |
 |---|---|---|
-| **WasmBridge.Net.Attributes** | Tiny, dependency-free marker-attribute library (`[WasmBridge]`, `[WasmBridgeExport]`, `[WasmBridgeTsInterface]`). | The class library containing your logic, and anywhere else that needs to declare bridge/TS-root types. |
-| **WasmBridge.Net.Sdk** | MSBuild `Task`s that scan already-built reference assemblies for those attributes and generate the bridge `.cs` file(s) and TypeScript `.ts` file(s), plus a `.props` file with common WASM project settings (see below). Auto-imports itself via NuGet - no manual `<Import>` needed. | The `Microsoft.NET.Sdk.WebAssembly` project that actually gets published as WASM. |
-| **[wasmbridge-net](wasmbridge-net)** (npm) | CLI that builds/publishes the WASM project and syncs its output (compiled app + generated TypeScript types) into a front-end project. | Your front-end project (e.g. a Vite/React app). |
+| **[WasmBridge.Net.Attributes](https://www.nuget.org/packages/WasmBridge.Net.Attributes)** (NuGet) | Tiny, dependency-free marker-attribute library (`[WasmBridge]`, `[WasmBridgeExport]`, `[WasmBridgeTsInterface]`). | The class library containing your logic, and anywhere else that needs to declare bridge/TS-root types. |
+| **[WasmBridge.Net.Sdk](https://www.nuget.org/packages/WasmBridge.Net.Sdk)** (NuGet) | MSBuild `Task`s that scan already-built reference assemblies for those attributes and generate the bridge `.cs` file(s) and TypeScript `.ts` file(s), plus a `.props` file with common WASM project settings (see below). Auto-imports itself via NuGet - no manual `<Import>` needed. | The `Microsoft.NET.Sdk.WebAssembly` project that actually gets published as WASM. |
+| **[wasmbridge-net](wasmbridge-net)** ([npm](https://www.npmjs.com/package/wasmbridge-net)) | CLI that builds/publishes the WASM project and syncs its output (compiled app + generated TypeScript types) into a front-end project. | Your front-end project (e.g. a Vite/React app). |
 
 ## Setup
 
