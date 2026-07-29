@@ -94,4 +94,31 @@
     </GenerateJsonSerializerContextTask>
   </Target>
 
+  <!--
+    Generates a TypeScript interface describing the JS-visible shape of the generated bridge
+    class (see GenerateWasmBridgesTask) for each [WasmBridge] type - one method signature per
+    [WasmBridgeExport] method. Written into the same output directory as
+    GenerateTypeScriptTypes ($(WasmBridgeTypeScriptOutputPath)) so it's picked up by the same
+    front-end sync step. Uses TaskHostFactory for the same DLL-lock reason as the tasks above.
+  -->
+  <UsingTask
+      TaskName="WasmBridge.Sdk.GenerateBridgeTypeScriptTask"
+      AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\WasmBridge.Sdk.dll"
+      TaskFactory="TaskHostFactory" />
+
+  <Target Name="GenerateBridgeTypeScript" BeforeTargets="CoreCompile" DependsOnTargets="ResolveReferences">
+    <!--
+      IntermediateOutputPath is only finalized by SDK targets that run before CoreCompile
+      (e.g. runtime identifier inference), so it must be read here rather than in a
+      top-level PropertyGroup, which would observe its pre-finalized (empty) value.
+    -->
+    <PropertyGroup>
+      <_WasmBridgeTypeScriptOutputPath Condition="'$(WasmBridgeTypeScriptOutputPath)' == ''">$(IntermediateOutputPath)wasm-interfaces\</_WasmBridgeTypeScriptOutputPath>
+      <_WasmBridgeTypeScriptOutputPath Condition="'$(WasmBridgeTypeScriptOutputPath)' != ''">$(WasmBridgeTypeScriptOutputPath)</_WasmBridgeTypeScriptOutputPath>
+    </PropertyGroup>
+    <GenerateBridgeTypeScriptTask Assemblies="@(ReferencePath)" OutputPath="$(_WasmBridgeTypeScriptOutputPath)">
+      <Output TaskParameter="GeneratedFiles" ItemName="FileWrites" />
+    </GenerateBridgeTypeScriptTask>
+  </Target>
+
 </Project>

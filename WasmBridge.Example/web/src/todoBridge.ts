@@ -1,11 +1,6 @@
-export interface TodoBridge {
-  IsValidText: (text: string) => boolean
-  AddTodo: (text: string, priority: number) => number
-  CompleteTodo: (id: number) => boolean
-  RemoveTodo: (id: number) => boolean
-  GetTodos: () => string
-  GetStats: () => string
-}
+import type { TodoServiceBridge } from './wasm-interfaces/todoServiceBridge'
+
+export type TodoBridge = TodoServiceBridge
 
 declare global {
   interface Window {
