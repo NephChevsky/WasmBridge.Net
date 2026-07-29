@@ -1,5 +1,5 @@
 import './style.css'
-import { loadTodoBridge } from './todoBridge'
+import { loadTodoService } from './wasm-interfaces/todoServiceBridge'
 import type { TodoItem } from './wasm-interfaces/todoItem'
 import { parseTodoStats } from './wasm-interfaces/todoStats'
 
@@ -27,7 +27,7 @@ const form = app.querySelector<HTMLFormElement>('.add-form')!
 const list = app.querySelector<HTMLUListElement>('.todo-list')!
 const statsEl = app.querySelector<HTMLDivElement>('.stats')!
 
-loadTodoBridge().then((bridge) => {
+loadTodoService().then((bridge) => {
   function refresh() {
     // GetTodos returns a JSON array, so there's no single-object parseX
     // helper for it (parseX helpers are only generated for [WasmBridgeTsInterface]
