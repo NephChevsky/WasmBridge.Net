@@ -7,16 +7,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- src\ holds source shipped AS-IS to consuming browser-wasm projects (see
-         build\WasmBridge.Net.Sdk.targets) - it uses JSImport/browser interop APIs that
-         aren't available on this project's own netstandard2.0 TFM, so exclude it here. -->
-    <Compile Remove="src\**\*.cs" />
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>WasmBridge.Net.Sdk</PackageId>
-    <Version>0.1.4</Version>
+    <Version>0.1.3</Version>
     <Description>MSBuild SDK tasks and props/targets that generate WebAssembly JSExport bridges and TypeScript interop types from WasmBridge.Attributes-annotated types, plus common WASM debug/publish settings.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
@@ -44,7 +37,6 @@
   <ItemGroup>
     <None Include="build\WasmBridge.Net.Sdk.targets" Pack="true" PackagePath="build\" />
     <None Include="build\WasmBridge.Net.Sdk.props" Pack="true" PackagePath="build\" />
-    <None Include="src\LocalStorageInterop.cs" Pack="true" PackagePath="src\" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
