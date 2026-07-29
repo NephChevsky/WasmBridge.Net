@@ -15,14 +15,16 @@ public class TodoService
 		return !string.IsNullOrWhiteSpace(text);
 	}
 
+	// JSExport only marshals primitives directly, so the enum crosses the bridge as its
+	// underlying int value and gets cast back to TodoPriority on this side.
 	[WasmBridgeExport]
-	public int AddTodo(string text, TodoPriority priority)
+	public int AddTodo(string text, int priority)
 	{
 		var item = new TodoItem
 		{
 			Id = _nextId++,
 			Text = text,
-			Priority = priority,
+			Priority = (TodoPriority)priority,
 			Completed = false
 		};
 		_items.Add(item);
