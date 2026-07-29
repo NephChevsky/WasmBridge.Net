@@ -3,7 +3,7 @@ using System;
 namespace WasmBridge.Attributes;
 
 /// <summary>
-/// Marks a type as a root for TypeScript generation: <c>WasmBridge.Tasks</c> generates a
+/// Marks a type as a root for TypeScript generation: <c>WasmBridge.Sdk</c> generates a
 /// <c>.ts</c> file for this type (interfaces for its whole reachable type graph, plus a
 /// <c>parseX</c> helper). Types without this attribute are only inlined into whichever root's
 /// file reaches them. The generated TypeScript name always matches the C# type name.
