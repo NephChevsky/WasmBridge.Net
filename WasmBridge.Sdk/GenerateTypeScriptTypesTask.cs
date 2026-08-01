@@ -44,6 +44,15 @@ public sealed class GenerateTypeScriptTypesTask : Microsoft.Build.Utilities.Task
         ["System.Decimal"] = "number",
     };
 
+    private static readonly HashSet<string> StringAliases = new()
+    {
+        "System.DateTime",
+        "System.DateTimeOffset",
+        "System.Guid",
+        "System.TimeSpan",
+        "System.Uri",
+    };
+
     private static readonly HashSet<string> ListLikeGenericTypes = new()
     {
         "System.Collections.Generic.List`1",
@@ -260,6 +269,11 @@ public sealed class GenerateTypeScriptTypesTask : Microsoft.Build.Utilities.Task
         if (type.FullName is not null && NumericAliases.TryGetValue(type.FullName, out string? numericAlias))
         {
             return numericAlias;
+        }
+
+        if (type.FullName is not null && StringAliases.Contains(type.FullName))
+        {
+            return "string";
         }
 
         if (type.IsEnum)
