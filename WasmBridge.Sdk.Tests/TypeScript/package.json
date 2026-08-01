@@ -1,0 +1,8 @@
+{
+  "name": "wasmbridge-sdk-tests-ts",
+  "private": true,
+  "description": "Local TypeScript compiler install used by WasmBridge.Sdk.Tests to type-check and execute the .ts files WasmBridge.Sdk generates. Not published.",
+  "devDependencies": {
+    "typescript": "~5.7.2"
+  }
+}
