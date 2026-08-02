@@ -38,6 +38,12 @@ public sealed class GenerateBridgeTypeScriptTaskTests : TaskTestBase
         Assert.Contains("IsPositive: (value: number) => boolean", content);
         // Person is a [WasmBridgeTsInterface] root, so the bridge method returns a JSON string.
         Assert.Contains("Describe: (name: string) => string", content);
+        // Task<primitive> becomes Promise<primitive>.
+        Assert.Contains("AddAsync: (a: number, b: number) => Promise<number>", content);
+        // Task<[WasmBridgeTsInterface]> still JSON-serializes the awaited result to a string.
+        Assert.Contains("DescribeAsync: (name: string) => Promise<string>", content);
+        // Plain (non-generic) Task becomes Promise<void>.
+        Assert.Contains("WaitAsync: () => Promise<void>", content);
         Assert.DoesNotContain("Ignored", content);
     }
 

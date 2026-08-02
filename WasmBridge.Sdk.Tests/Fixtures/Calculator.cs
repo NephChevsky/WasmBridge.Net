@@ -27,6 +27,26 @@ public class Calculator
         PastAddresses = Array.Empty<Address>(),
     };
 
+    [WasmBridgeExport]
+    public static async Task<double> AddAsync(double a, double b)
+    {
+        await Task.Yield();
+        return a + b;
+    }
+
+    [WasmBridgeExport]
+    public async Task<Person> DescribeAsync(string name)
+    {
+        await Task.Yield();
+        return Describe(name);
+    }
+
+    [WasmBridgeExport]
+    public static async Task WaitAsync()
+    {
+        await Task.Yield();
+    }
+
     // Not annotated with [WasmBridgeExport] - should never show up on the generated bridge.
     public void Ignored()
     {

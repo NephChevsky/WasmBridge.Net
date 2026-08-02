@@ -49,6 +49,30 @@ public sealed class GenerateWasmBridgesTaskTests : TaskTestBase
     }
 
     [Fact]
+    public void Execute_PassesThroughTaskOfPrimitiveDirectly()
+    {
+        Assert.Contains(
+            "internal static global::System.Threading.Tasks.Task<double> AddAsync(double a, double b) => global::WasmBridge.Sdk.Tests.Fixtures.Calculator.AddAsync(a, b);",
+            _content);
+    }
+
+    [Fact]
+    public void Execute_AwaitsAndJsonSerializesTaskOfTsInterfaceRootedReturnType()
+    {
+        Assert.Contains("internal static async global::System.Threading.Tasks.Task<string> DescribeAsync(string name)", _content);
+        Assert.Contains("var result = await _target.DescribeAsync(name);", _content);
+        Assert.Contains("return global::System.Text.Json.JsonSerializer.Serialize(result, WasmBridgeJsonContext.Default.Person);", _content);
+    }
+
+    [Fact]
+    public void Execute_AwaitsPlainTaskWithNoReturnValue()
+    {
+        Assert.Contains(
+            "internal static async global::System.Threading.Tasks.Task WaitAsync() => await global::WasmBridge.Sdk.Tests.Fixtures.Calculator.WaitAsync();",
+            _content);
+    }
+
+    [Fact]
     public void Execute_GeneratedFile_IsSyntacticallyValidCSharp()
     {
         CSharpValidator.AssertParsesWithoutSyntaxErrors(_content);

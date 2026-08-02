@@ -233,7 +233,7 @@ export function __FUNCNAME__(): Promise<__CLASSNAME__> {
         {
             string exportedName = GetNamedStringArgument(attribute, "Name") ?? method.Name;
             string parameters = string.Join(", ", method.GetParameters().Select(p => $"{p.Name}: {GetTypeScriptType(p.ParameterType)}"));
-            string returnType = IsJsonSerialized(method.ReturnType) ? "string" : GetTypeScriptType(method.ReturnType);
+            string returnType = GetBridgeReturnType(method.ReturnType);
             sb.AppendLine($"  {exportedName}: ({parameters}) => {returnType}");
         }
 
@@ -308,6 +308,59 @@ export function __FUNCNAME__(): Promise<__CLASSNAME__> {
 
     private static bool IsTsInterfaceRoot(Type type) =>
         type.GetCustomAttributesData().Any(a => a.AttributeType.FullName == TsInterfaceAttributeFullName);
+
+    /// <summary>
+    /// Maps a <c>[WasmBridgeExport]</c> method's return type to the TypeScript type the
+    /// generated bridge method actually resolves to - mirroring
+    /// <c>GenerateWasmBridgesTask</c>'s own return-shape rules: <c>Task</c>/<c>Task&lt;T&gt;</c>
+    /// become <c>Promise&lt;...&gt;</c> (awaited on the JS side automatically since the
+    /// generated C# bridge method itself returns a <c>Task</c>), and any
+    /// <c>[WasmBridgeTsInterface]</c>-rooted result (whether awaited or not) becomes
+    /// <c>string</c> since it's JSON-serialized by the bridge.
+    /// </summary>
+    private string GetBridgeReturnType(Type type)
+    {
+        if (TryUnwrapTask(type, out Type innerType, out bool isVoidTask))
+        {
+            if (isVoidTask)
+            {
+                return "Promise<void>";
+            }
+
+            string innerTsType = IsJsonSerialized(innerType) ? "string" : GetTypeScriptType(innerType);
+            return $"Promise<{innerTsType}>";
+        }
+
+        return IsJsonSerialized(type) ? "string" : GetTypeScriptType(type);
+    }
+
+    /// <summary>
+    /// If <paramref name="type"/> is <c>System.Threading.Tasks.Task</c> or a closed
+    /// <c>Task&lt;T&gt;</c>, returns <see langword="true"/> with <paramref name="innerType"/>
+    /// set to <c>T</c> (or <see cref="void"/> when it's the non-generic <c>Task</c>, via
+    /// <paramref name="isVoidTask"/>). Otherwise returns <see langword="false"/> and
+    /// <paramref name="innerType"/> is <paramref name="type"/> unchanged.
+    /// </summary>
+    private static bool TryUnwrapTask(Type type, out Type innerType, out bool isVoidTask)
+    {
+        if (type.FullName == "System.Threading.Tasks.Task")
+        {
+            innerType = typeof(void);
+            isVoidTask = true;
+            return true;
+        }
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition().FullName == "System.Threading.Tasks.Task`1")
+        {
+            innerType = type.GetGenericArguments()[0];
+            isVoidTask = false;
+            return true;
+        }
+
+        innerType = type;
+        isVoidTask = false;
+        return false;
+    }
 
     private static string? GetNamedStringArgument(CustomAttributeData attribute, string name)
     {

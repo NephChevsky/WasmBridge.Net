@@ -199,18 +199,51 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
             string call = $"{invocationTarget}.{method.Name}({arguments})";
 
             sb.AppendLine("    [JSExport]");
-            string? jsonPropertyName = GetJsonContextPropertyName(method.ReturnType);
-            if (jsonPropertyName is not null)
+
+            bool isTask = TryUnwrapTask(method.ReturnType, out Type innerReturnType, out bool isVoidTask);
+            if (isTask && isVoidTask)
             {
-                // The return type isn't JSExport-marshalable directly (it's a
-                // [WasmBridgeTsInterface]-rooted type or a List<T> of one), so serialize it
-                // to JSON using the SDK-generated WasmBridgeJsonContext instead.
-                sb.AppendLine($"    internal static string {exportedName}({parameters}) => global::System.Text.Json.JsonSerializer.Serialize({call}, WasmBridgeJsonContext.Default.{jsonPropertyName});");
+                // A plain (non-generic) Task with no return value - JSExport supports
+                // Task directly (as a JS Promise<void>), just await it through.
+                sb.AppendLine($"    internal static async global::System.Threading.Tasks.Task {exportedName}({parameters}) => await {call};");
+            }
+            else if (isTask)
+            {
+                string? taskJsonPropertyName = GetJsonContextPropertyName(innerReturnType);
+                if (taskJsonPropertyName is not null)
+                {
+                    // The awaited result isn't JSExport-marshalable directly (it's a
+                    // [WasmBridgeTsInterface]-rooted type or a List<T> of one), so await it
+                    // and serialize the result to JSON, exposing a Task<string> instead.
+                    sb.AppendLine($"    internal static async global::System.Threading.Tasks.Task<string> {exportedName}({parameters})");
+                    sb.AppendLine("    {");
+                    sb.AppendLine($"        var result = await {call};");
+                    sb.AppendLine($"        return global::System.Text.Json.JsonSerializer.Serialize(result, WasmBridgeJsonContext.Default.{taskJsonPropertyName});");
+                    sb.AppendLine("    }");
+                }
+                else
+                {
+                    // The awaited result is directly JSExport-marshalable (e.g. a primitive) -
+                    // Task<T> of it is supported directly, pass the task through as-is.
+                    string innerTypeName = GetTypeName(innerReturnType);
+                    sb.AppendLine($"    internal static global::System.Threading.Tasks.Task<{innerTypeName}> {exportedName}({parameters}) => {call};");
+                }
             }
             else
             {
-                string returnType = GetTypeName(method.ReturnType);
-                sb.AppendLine($"    internal static {returnType} {exportedName}({parameters}) => {call};");
+                string? jsonPropertyName = GetJsonContextPropertyName(method.ReturnType);
+                if (jsonPropertyName is not null)
+                {
+                    // The return type isn't JSExport-marshalable directly (it's a
+                    // [WasmBridgeTsInterface]-rooted type or a List<T> of one), so serialize it
+                    // to JSON using the SDK-generated WasmBridgeJsonContext instead.
+                    sb.AppendLine($"    internal static string {exportedName}({parameters}) => global::System.Text.Json.JsonSerializer.Serialize({call}, WasmBridgeJsonContext.Default.{jsonPropertyName});");
+                }
+                else
+                {
+                    string returnType = GetTypeName(method.ReturnType);
+                    sb.AppendLine($"    internal static {returnType} {exportedName}({parameters}) => {call};");
+                }
             }
             sb.AppendLine();
         }
@@ -260,6 +293,34 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
 
     private static bool IsTsInterfaceRoot(Type type) =>
         type.GetCustomAttributesData().Any(a => a.AttributeType.FullName == TsInterfaceAttributeFullName);
+
+    /// <summary>
+    /// If <paramref name="type"/> is <c>System.Threading.Tasks.Task</c> or a closed
+    /// <c>Task&lt;T&gt;</c>, returns <see langword="true"/> with <paramref name="innerType"/>
+    /// set to <c>T</c> (or <see cref="void"/> when it's the non-generic <c>Task</c>, via
+    /// <paramref name="isVoidTask"/>). Otherwise returns <see langword="false"/> and
+    /// <paramref name="innerType"/> is <paramref name="type"/> unchanged.
+    /// </summary>
+    private static bool TryUnwrapTask(Type type, out Type innerType, out bool isVoidTask)
+    {
+        if (type.FullName == "System.Threading.Tasks.Task")
+        {
+            innerType = typeof(void);
+            isVoidTask = true;
+            return true;
+        }
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition().FullName == "System.Threading.Tasks.Task`1")
+        {
+            innerType = type.GetGenericArguments()[0];
+            isVoidTask = false;
+            return true;
+        }
+
+        innerType = type;
+        isVoidTask = false;
+        return false;
+    }
 
     private static string? GetNamedStringArgument(CustomAttributeData attribute, string name)
     {
