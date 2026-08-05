@@ -16,6 +16,9 @@ public class Calculator
     public static bool IsPositive(double value) => value > 0;
 
     [WasmBridgeExport]
+    public static string JoinTags(string[] tags) => string.Join(",", tags);
+
+    [WasmBridgeExport]
     public Person Describe(string name) => new()
     {
         Name = name,

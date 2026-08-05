@@ -37,6 +37,7 @@ public sealed class GenerateWasmBridgesTaskTests : TaskTestBase
         Assert.Contains("internal static double Add(double a, double b) => _target.Add(a, b);", _content);
         Assert.Contains("internal static double Multiply(double a, double b) => _target.Times(a, b);", _content);
         Assert.Contains("internal static bool IsPositive(double value)", _content);
+        Assert.Contains("internal static string JoinTags(string[] tags) => global::WasmBridge.Sdk.Tests.Fixtures.Calculator.JoinTags(tags);", _content);
         Assert.DoesNotContain(" Ignored(", _content);
     }
 

@@ -262,6 +262,15 @@ public sealed class GenerateWasmBridgesTask : Microsoft.Build.Utilities.Task
             return alias;
         }
 
+        if (type.IsArray)
+        {
+            Type? elementType = type.GetElementType();
+            if (elementType is not null)
+            {
+                return GetTypeName(elementType) + "[]";
+            }
+        }
+
         return "global::" + type.FullName;
     }
 

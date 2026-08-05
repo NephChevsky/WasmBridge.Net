@@ -278,10 +278,19 @@ export function __FUNCNAME__(): Promise<__CLASSNAME__> {
             return alias;
         }
 
+        if (type.IsArray)
+        {
+            Type? elementType = type.GetElementType();
+            if (elementType is not null)
+            {
+                return $"{GetTypeScriptType(elementType)}[]";
+            }
+        }
+
         Log.LogError(
             $"GenerateBridgeTypeScript: unsupported type '{type.FullName}' used as a [WasmBridgeExport] " +
-            "parameter or return type - only primitives, void, and [WasmBridgeTsInterface]-rooted types " +
-            "(or a List<T> of one, for return types) are supported.");
+            "parameter or return type - only primitives, void, arrays of primitives, and " +
+            "[WasmBridgeTsInterface]-rooted types (or a List<T> of one, for return types) are supported.");
         return "unknown";
     }
 

@@ -36,6 +36,8 @@ public sealed class GenerateBridgeTypeScriptTaskTests : TaskTestBase
         Assert.Contains("Add: (a: number, b: number) => number", content);
         Assert.Contains("Multiply: (a: number, b: number) => number", content);
         Assert.Contains("IsPositive: (value: number) => boolean", content);
+        // Arrays of primitives map to TypeScript arrays.
+        Assert.Contains("JoinTags: (tags: string[]) => string", content);
         // Person is a [WasmBridgeTsInterface] root, so the bridge method returns a JSON string.
         Assert.Contains("Describe: (name: string) => string", content);
         // Task<primitive> becomes Promise<primitive>.
